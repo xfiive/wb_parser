@@ -1,5 +1,6 @@
 package org.parser.wb_tshirt_parser.bot;
 
+import jakarta.annotation.PostConstruct;
 import org.jetbrains.annotations.NotNull;
 import org.parser.wb_tshirt_parser.bot.handlers.Command;
 import org.parser.wb_tshirt_parser.bot.handlers.CommandHandler;
@@ -9,9 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -71,6 +77,25 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     handler.handle(update, this);
                 }
             }
+        }
+    }
+
+    @PostConstruct
+    public void init() {
+        initializeCommands();
+    }
+
+    public void initializeCommands() {
+        List<BotCommand> commandList = new ArrayList<>();
+        commandList.add(new BotCommand("/start", "Запустить бота"));
+        commandList.add(new BotCommand("/help", "Информация о боте"));
+
+        SetMyCommands setMyCommands = new SetMyCommands();
+        setMyCommands.setCommands(commandList);
+        try {
+            execute(setMyCommands);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
