@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.parser.wb_tshirt_parser.bot.handlers.Command;
 import org.parser.wb_tshirt_parser.bot.handlers.CommandHandler;
 import org.parser.wb_tshirt_parser.bot.handlers.implementations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -15,9 +17,9 @@ import java.util.Map;
 @Component
 public class MyTelegramBot extends TelegramLongPollingBot {
 
-    private final Map<Command, CommandHandler> commandHandlers = new HashMap<>();
-//    private final Map<Long, List<Integer>> userMessageHistory = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(MyTelegramBot.class);
 
+    private final Map<Command, CommandHandler> commandHandlers = new HashMap<>();
 
     @Value("${bot.username}")
     private String botUsername;
@@ -44,6 +46,11 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(@NotNull Update update) {
+
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            logger.info("Received a message with text: {}", update.getMessage().getText());
+        }
+
         if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
             Command command = Command.fromString(messageText);
