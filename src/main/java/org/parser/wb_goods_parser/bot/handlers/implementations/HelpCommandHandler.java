@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -27,8 +26,6 @@ public class HelpCommandHandler implements CommandHandler {
 
     @Override
     public void handle(@NotNull Update update, TelegramLongPollingBot bot) {
-        var chatId = update.getCallbackQuery().getMessage().getChatId();
-
         Mono<ChatData> existingChat = this.chatDataService.findChatById(update.getCallbackQuery().getMessage().getChatId());
         existingChat.hasElement().subscribe(chatData -> {
             if (chatData)
@@ -42,28 +39,23 @@ public class HelpCommandHandler implements CommandHandler {
 
     }
 
-    private void handleNotExistingChat(Update update, TelegramLongPollingBot bot) {
+    private void handleNotExistingChat(@NotNull Update update, TelegramLongPollingBot bot) {
+//        saveNewChat(update);
 
+        var markup = this.messageSender.formReplyMarkup(true, List.of("О боте", "Запустить бота"), false);
+        String messageText = "Приветствую! \\uD83D\\uDE0A \n Я - это Бот, который был создан с целью немного упростить жизнь людям.\nТы можешь сказать мне, что ты хочешь искать, а дальше я буду показывать тебе товары, которые я найду по данной теме.\n\nНапиши '/start' или нажми на кнопку, чтобы запустить меня!";
+
+        var messageParams = this.messageSender.formMessageParameters(update, bot, markup, messageText);
+
+        this.messageSender.sendMessage(messageParams);
     }
 
-
-    private ReplyKeyboardMarkup formReplyMarkup(boolean isPersistent, List<String> buttons) {
-//        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
-//        markup.setIsPersistent(true);
-//
-//        KeyboardButton buttonQuery = new KeyboardButton("Редактировать поисковой запрос");
-//        KeyboardButton buttonFeed = new KeyboardButton("Смотреть товары");
-//
-//        KeyboardRow buttonLayerFirst = new KeyboardRow();
-//        buttonLayerFirst.add(buttonFeed);
-//        buttonLayerFirst.add(buttonQuery);
-//
-//        List<KeyboardRow> buttons = new ArrayList<>();
-//
-//        buttons.add(buttonLayerFirst);
-//
-//        markup.setKeyboard(buttons);
-        return null;
+    private void saveNewChat(@NotNull Update update) {
+        ChatData chatData = new ChatData();
+        chatData.setChatId(update.getCallbackQuery().getMessage().getChatId());
+        chatData.setCurrentQuery("");
+        chatData.setBotStarted(true);
     }
+
 
 }
