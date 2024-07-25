@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.parser</groupId>
-    <artifactId>wb_tshirt_parser</artifactId>
+    <artifactId>wb_goods_parser</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>wb_tshirt_parser</name>
     <description>wb_tshirt_parser</description>

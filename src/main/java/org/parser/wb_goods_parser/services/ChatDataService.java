@@ -1,9 +1,9 @@
-package org.parser.wb_tshirt_parser.services;
+package org.parser.wb_goods_parser.services;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.parser.wb_tshirt_parser.entities.ChatData;
-import org.parser.wb_tshirt_parser.repositories.ChatDataRepository;
+import org.parser.wb_goods_parser.entities.ChatData;
+import org.parser.wb_goods_parser.repositories.ChatDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -31,6 +31,7 @@ public class ChatDataService {
     public Mono<ChatData> updateChat(long id, ChatData chat) {
         return this.chatDataRepository.findById(id).flatMap(existingChat -> {
             existingChat.setChatId(id);
+            existingChat.setBotStarted(chat.isBotStarted());
             existingChat.setCurrentQuery(chat.getCurrentQuery());
             return this.chatDataRepository.save(existingChat);
         }).switchIfEmpty(Mono.empty());

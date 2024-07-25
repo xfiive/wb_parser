@@ -1,4 +1,4 @@
-package org.parser.wb_tshirt_parser.bot.config;
+package org.parser.wb_goods_parser.bot.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

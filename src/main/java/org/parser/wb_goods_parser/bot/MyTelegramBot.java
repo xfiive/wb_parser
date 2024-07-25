@@ -1,10 +1,10 @@
-package org.parser.wb_tshirt_parser.bot;
+package org.parser.wb_goods_parser.bot;
 
 import jakarta.annotation.PostConstruct;
 import org.jetbrains.annotations.NotNull;
-import org.parser.wb_tshirt_parser.bot.handlers.Command;
-import org.parser.wb_tshirt_parser.bot.handlers.CommandHandler;
-import org.parser.wb_tshirt_parser.bot.handlers.implementations.*;
+import org.parser.wb_goods_parser.bot.handlers.prototypes.Command;
+import org.parser.wb_goods_parser.bot.handlers.prototypes.CommandHandler;
+import org.parser.wb_goods_parser.bot.handlers.implementations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

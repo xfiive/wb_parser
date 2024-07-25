@@ -1,4 +1,4 @@
-package org.parser.wb_tshirt_parser.parser;
+package org.parser.wb_goods_parser.parser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

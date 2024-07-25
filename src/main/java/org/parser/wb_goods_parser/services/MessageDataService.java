@@ -1,9 +1,9 @@
-package org.parser.wb_tshirt_parser.services;
+package org.parser.wb_goods_parser.services;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.parser.wb_tshirt_parser.entities.MessageData;
-import org.parser.wb_tshirt_parser.repositories.MessageDateRepository;
+import org.parser.wb_goods_parser.entities.MessageData;
+import org.parser.wb_goods_parser.repositories.MessageDateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -31,7 +31,6 @@ public class MessageDataService {
 
     public Mono<MessageData> updateMessage(long id, MessageData message) {
         return this.messageDateRepository.findById(id).flatMap(existingMessage -> {
-            existingMessage.setActive(message.isActive());
             existingMessage.setChatId(message.getChatId());
             existingMessage.setMessageId(id);
             return this.messageDateRepository.save(existingMessage);

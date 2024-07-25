@@ -1,4 +1,4 @@
-package org.parser.wb_tshirt_parser.bot.handlers;
+package org.parser.wb_goods_parser.bot.handlers.prototypes;
 
 import org.jetbrains.annotations.Nullable;
 
