@@ -33,7 +33,7 @@ public class TelegramMessageSender implements MessageSender<TelegramMessageParam
 
     public @NotNull TelegramMessageParameters formMessageParameters(@NotNull Update update, TelegramLongPollingBot bot, ReplyKeyboardMarkup markup, String messageText) {
         var messageParams = new TelegramMessageParameters(bot);
-        messageParams.setChatId(update.getCallbackQuery().getMessage().getChatId());
+        messageParams.setChatId(update.getMessage().getChatId());
         messageParams.setReplyKeyboardMarkup(markup);
         messageParams.setText(messageText);
         return messageParams;
@@ -55,7 +55,7 @@ public class TelegramMessageSender implements MessageSender<TelegramMessageParam
 
         markup.setKeyboard(keyboardRows);
 
-        return null;
+        return markup;
     }
 
     private void send(SendMessage message, @NotNull TelegramLongPollingBot bot) {

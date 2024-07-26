@@ -5,10 +5,10 @@ import org.jetbrains.annotations.Nullable;
 public enum Command {
     START("/start"),
     HELP("/help"),
-    EDIT_QUERY("edit_query"),
-    VIEW_PRODUCTS("view_products"),
-    NEXT("next"),
-    MENU("menu");
+    EDIT_QUERY("Изменить поисковой запрос"),
+    VIEW_PRODUCTS("Смотреть продукты"),
+    NEXT("Далее"),
+    MENU("Меню");
 
     private final String command;
 

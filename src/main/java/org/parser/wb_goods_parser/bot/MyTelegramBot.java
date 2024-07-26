@@ -1,12 +1,14 @@
 package org.parser.wb_goods_parser.bot;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.parser.wb_goods_parser.bot.handlers.implementations.*;
 import org.parser.wb_goods_parser.bot.handlers.prototypes.Command;
 import org.parser.wb_goods_parser.bot.handlers.prototypes.CommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -21,24 +23,34 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MyTelegramBot extends TelegramLongPollingBot {
 
     private static final Logger logger = LoggerFactory.getLogger(MyTelegramBot.class);
 
     private final Map<Command, CommandHandler> commandHandlers = new HashMap<>();
+    private final StartCommandHandler startCommandHandler;
+    private final HelpCommandHandler helpCommandHandler;
+    private final EditQueryCommandHandler editQueryCommandHandler;
+    private final ViewProductsCommandHandler viewProductsCommandHandler;
+    private final NextCommandHandler nextCommandHandler;
+    private final MenuCommandHandler menuCommandHandler;
+
 
     @Value("${bot.username}")
     private String botUsername;
     @Value("${bot.token}")
     private String botToken;
 
-    public MyTelegramBot() {
-        commandHandlers.put(Command.START, new StartCommandHandler());
-        commandHandlers.put(Command.HELP, new HelpCommandHandler());
-        commandHandlers.put(Command.EDIT_QUERY, new EditQueryCommandHandler());
-        commandHandlers.put(Command.VIEW_PRODUCTS, new ViewProductsCommandHandler());
-        commandHandlers.put(Command.NEXT, new NextCommandHandler());
-        commandHandlers.put(Command.MENU, new MenuCommandHandler());
+    @PostConstruct
+    public void init() {
+        commandHandlers.put(Command.START, startCommandHandler);
+        commandHandlers.put(Command.HELP, helpCommandHandler);
+        commandHandlers.put(Command.EDIT_QUERY, editQueryCommandHandler);
+        commandHandlers.put(Command.VIEW_PRODUCTS, viewProductsCommandHandler);
+        commandHandlers.put(Command.NEXT, nextCommandHandler);
+        commandHandlers.put(Command.MENU, menuCommandHandler);
+        initializeCommands();
     }
 
     @Override
@@ -56,6 +68,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             logger.info("Received a message with text: {}", update.getMessage().getText());
+        }
+
+        if (update.hasCallbackQuery()) {
+            logger.info("Received a message with callback query: {}", update.getCallbackQuery());
         }
 
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -81,11 +97,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    @PostConstruct
-    public void init() {
-        initializeCommands();
-    }
-
     public void initializeCommands() {
         List<BotCommand> commandList = new ArrayList<>();
         commandList.add(new BotCommand("/start", "Запустить бота"));
@@ -99,30 +110,4 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
-
-//    public void storeMessage(long chatId, int messageId) {
-//        userMessageHistory.computeIfAbsent(chatId, k -> new ArrayList<>()).add(messageId);
-//    }
-//
-//    public void removePreviousKeyboards(long chatId) {
-//        List<Integer> messageIds = userMessageHistory.getOrDefault(chatId, new ArrayList<>());
-//
-//        for (int messageId : messageIds) {
-//            EditMessageReplyMarkup editMarkup = new EditMessageReplyMarkup();
-//            editMarkup.setChatId(String.valueOf(chatId));
-//            editMarkup.setMessageId(messageId);
-//            editMarkup.setReplyMarkup(null);
-//
-//            try {
-//                execute(editMarkup);
-//            } catch (TelegramApiException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        // Clear the history after removing keyboards
-//        userMessageHistory.put(chatId, new ArrayList<>());
-//    }
-
 }
-
