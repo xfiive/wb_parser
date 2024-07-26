@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parser.wb_goods_parser.bot.handlers.prototypes.CommandHandler;
 import org.parser.wb_goods_parser.bot.message_sender.MessageSender;
 import org.parser.wb_goods_parser.entities.ChatData;
+import org.parser.wb_goods_parser.entities.ChatState;
 import org.parser.wb_goods_parser.entities.TelegramMessageParameters;
 import org.parser.wb_goods_parser.services.ChatDataService;
 import org.slf4j.Logger;
@@ -61,6 +62,7 @@ public class StartCommandHandler implements CommandHandler {
         chatData.setChatId(update.getMessage().getChatId());
         chatData.setCurrentQuery("");
         chatData.setBotStarted(true);
+        chatData.setState(ChatState.NONE);
         this.chatDataService.addNewChat(chatData).hasElement().subscribe(savedChat -> {
             if (savedChat) {
                 logger.info("Chat saved successfully");

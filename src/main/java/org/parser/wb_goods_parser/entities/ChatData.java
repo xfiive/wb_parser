@@ -17,4 +17,7 @@ public class ChatData {
 
     @Field
     private boolean isBotStarted;
+
+    @Field
+    private ChatState state;
 }

@@ -5,8 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.parser.wb_goods_parser.bot.handlers.prototypes.CommandHandler;
 import org.parser.wb_goods_parser.bot.message_sender.MessageSender;
 import org.parser.wb_goods_parser.entities.ChatData;
+import org.parser.wb_goods_parser.entities.ChatState;
 import org.parser.wb_goods_parser.entities.TelegramMessageParameters;
 import org.parser.wb_goods_parser.services.ChatDataService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -17,37 +20,35 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class MenuCommandHandler implements CommandHandler {
+public class ReceiveQueryCommandHandler implements CommandHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ReceiveQueryCommandHandler.class);
 
     private final ChatDataService chatDataService;
     private final MessageSender<TelegramMessageParameters> messageSender;
 
     @Override
-    public void handle(@NotNull Update update, @NotNull TelegramLongPollingBot bot) {
-        Mono<ChatData> existingChatData = this.chatDataService.findChatById(update.getMessage().getChatId());
+    public void handle(@NotNull Update update, TelegramLongPollingBot bot) {
+        updateChatData(update);
 
-        existingChatData.hasElement().subscribe(chatData -> {
-            if (chatData)
-                handleExistingChat(update, bot);
-            else
-                handleNotExistingChat(update, bot);
-        });
-    }
-
-
-    private void handleExistingChat(@NotNull Update update, TelegramLongPollingBot bot) {
-        String messageText = "Вы вернулись в меню.";
+        String messageText = "Отлично, я записал твой запрос.\n\n";
         var markup = this.messageSender.formReplyMarkup(true, List.of("Изменить поисковой запрос", "Смотреть продукты"), true);
         var messageParams = this.messageSender.formMessageParameters(update, bot, markup, messageText);
 
         this.messageSender.sendMessage(messageParams);
     }
 
-    private void handleNotExistingChat(@NotNull Update update, TelegramLongPollingBot bot) {
-        String messageText = "Ух ты! Даже не знаю, как так вышло, но мы с тобой всё ещё не знакомы( \n\nЗапусти меня и давай начнём работать вместе! \uD83D\uDE0A";
-        var markup = this.messageSender.formReplyMarkup(true, List.of("О боте", "Запустить бота"), true);
-        var messageParams = this.messageSender.formMessageParameters(update, bot, markup, messageText);
-
-        this.messageSender.sendMessage(messageParams);
+    private void updateChatData(@NotNull Update update) {
+        Mono<ChatData> existingChatData = this.chatDataService.findChatById(update.getMessage().getChatId());
+        existingChatData.subscribe(chatData -> {
+            chatData.setState(ChatState.NONE);
+            chatData.setCurrentQuery(update.getMessage().getText());
+            this.chatDataService.updateChat(chatData.getChatId(), chatData).hasElement().subscribe(updatedChat -> {
+                if (!updatedChat) {
+                    log.error("Failed to update chat state");
+                }
+            });
+        });
     }
+
 }

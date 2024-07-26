@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parser.wb_goods_parser.bot.handlers.implementations.*;
 import org.parser.wb_goods_parser.bot.handlers.prototypes.Command;
 import org.parser.wb_goods_parser.bot.handlers.prototypes.CommandHandler;
+import org.parser.wb_goods_parser.services.ChatDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.parser.wb_goods_parser.bot.handlers.prototypes.Command.UNDEFINED;
+
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MyTelegramBot extends TelegramLongPollingBot {
@@ -29,13 +32,15 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     private static final Logger logger = LoggerFactory.getLogger(MyTelegramBot.class);
 
     private final Map<Command, CommandHandler> commandHandlers = new HashMap<>();
+
     private final StartCommandHandler startCommandHandler;
     private final HelpCommandHandler helpCommandHandler;
     private final EditQueryCommandHandler editQueryCommandHandler;
     private final ViewProductsCommandHandler viewProductsCommandHandler;
     private final NextCommandHandler nextCommandHandler;
     private final MenuCommandHandler menuCommandHandler;
-
+    private final ReceiveQueryCommandHandler receiveQueryCommandHandler;
+    private final ChatDataService chatDataService;
 
     @Value("${bot.username}")
     private String botUsername;
@@ -49,6 +54,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         commandHandlers.put(Command.EDIT_QUERY, editQueryCommandHandler);
         commandHandlers.put(Command.VIEW_PRODUCTS, viewProductsCommandHandler);
         commandHandlers.put(Command.NEXT, nextCommandHandler);
+        commandHandlers.put(UNDEFINED, receiveQueryCommandHandler);
         commandHandlers.put(Command.MENU, menuCommandHandler);
         initializeCommands();
     }
@@ -65,7 +71,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(@NotNull Update update) {
-
         if (update.hasMessage() && update.getMessage().hasText()) {
             logger.info("Received a message with text: {}", update.getMessage().getText());
         }
@@ -81,9 +86,16 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             if (command != null) {
                 CommandHandler handler = commandHandlers.get(command);
                 if (handler != null) {
+                    logger.info("Handler class handling an event: {}", handler.getClass());
+                    handler.handle(update, this);
+                }
+            } else {
+                CommandHandler handler = commandHandlers.get(UNDEFINED);
+                if (handler != null) {
                     handler.handle(update, this);
                 }
             }
+
         } else if (update.hasCallbackQuery()) {
             String callbackData = update.getCallbackQuery().getData();
             Command command = Command.fromString(callbackData);

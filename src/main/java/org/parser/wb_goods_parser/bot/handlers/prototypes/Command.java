@@ -2,30 +2,34 @@ package org.parser.wb_goods_parser.bot.handlers.prototypes;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public enum Command {
-    START("/start"),
-    HELP("/help"),
-    EDIT_QUERY("Изменить поисковой запрос"),
-    VIEW_PRODUCTS("Смотреть продукты"),
-    NEXT("Далее"),
-    MENU("Меню");
+    START(List.of("/start", "Запустить бота")),
+    HELP(List.of("/help", "О боте")),
+    EDIT_QUERY(List.of("Изменить поисковой запрос")),
+    VIEW_PRODUCTS(List.of("Смотреть продукты")),
+    NEXT(List.of("Далее")),
+    UNDEFINED(List.of("")),
+    MENU(List.of("Меню"));
 
-    private final String command;
+    private final List<String> commands;
 
-    Command(String command) {
-        this.command = command;
+    Command(List<String> commands) {
+        this.commands = commands;
     }
 
     public static @Nullable Command fromString(String command) {
         for (Command c : Command.values()) {
-            if (c.getCommand().equalsIgnoreCase(command)) {
+            if (c.getCommands().contains(command)) {
                 return c;
             }
         }
         return null;
     }
 
-    public String getCommand() {
-        return command;
+
+    public List<String> getCommands() {
+        return commands;
     }
 }
