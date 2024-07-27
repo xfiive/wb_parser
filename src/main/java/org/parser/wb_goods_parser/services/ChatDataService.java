@@ -46,6 +46,9 @@ public class ChatDataService {
                 existingChat.setChatId(id);
                 existingChat.setCurrentQuery(CompressionService.compress(chat.getCurrentQuery()));
                 existingChat.setState(chat.getState());
+                existingChat.setCurrentIndex(chat.getCurrentIndex());
+                existingChat.setCurrentPage(chat.getCurrentPage());
+                existingChat.setShownHashes(chat.getShownHashes());
                 return this.chatDataRepository.save(existingChat);
             } catch (Exception e) {
                 return Mono.error(e);

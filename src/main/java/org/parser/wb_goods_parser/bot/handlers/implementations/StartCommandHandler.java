@@ -62,6 +62,9 @@ public class StartCommandHandler implements CommandHandler {
         chatData.setChatId(update.getMessage().getChatId());
         chatData.setCurrentQuery("");
         chatData.setState(ChatState.NONE);
+        chatData.setCurrentIndex(0);
+        chatData.setCurrentPage(0);
+        chatData.setShownHashes(null);
         this.chatDataService.addNewChat(chatData).hasElement().subscribe(savedChat -> {
             if (savedChat) {
                 logger.info("Chat saved successfully");
