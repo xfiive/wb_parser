@@ -1,5 +1,6 @@
 package org.parser.wb_goods_parser.parser;
 
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,9 @@ public class PageConsumer {
     @Value("${parser.user-agent}")
     private String userAgent;
 
+    public Document consumePage() {
+        return null;
+    }
 
 
 }
