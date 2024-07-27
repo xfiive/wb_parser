@@ -61,7 +61,6 @@ public class StartCommandHandler implements CommandHandler {
         ChatData chatData = new ChatData();
         chatData.setChatId(update.getMessage().getChatId());
         chatData.setCurrentQuery("");
-        chatData.setBotStarted(true);
         chatData.setState(ChatState.NONE);
         this.chatDataService.addNewChat(chatData).hasElement().subscribe(savedChat -> {
             if (savedChat) {

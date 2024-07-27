@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -42,7 +43,11 @@ public class EditQueryCommandHandler implements CommandHandler {
     private void handleExistingChat(@NotNull Update update, TelegramLongPollingBot bot) {
         this.updateChatState(update);
 
-        String messageText = "Введи название и описание того, что ты хочешь искать.";
+        String currentQuery = Objects.requireNonNull(this.chatDataService.findChatById(update.getMessage().getChatId()).block()).getCurrentQuery();
+
+        var messageText = "Введи название и описание того, что ты хочешь искать.";
+        if (!currentQuery.isEmpty())
+            messageText += ("\n\nТекущий поисковой запрос: " + currentQuery);
         var markup = this.messageSender.formReplyMarkup(true, List.of("Меню"), true);
         var messageParams = this.messageSender.formMessageParameters(update, bot, markup, messageText);
 
@@ -50,7 +55,7 @@ public class EditQueryCommandHandler implements CommandHandler {
     }
 
     private void handleNotExistingChat(@NotNull Update update, TelegramLongPollingBot bot) {
-        String messageText = "Ух ты! Даже не знаю, как так вышло, но мы с тобой всё ещё не знакомы( \n\nЗапусти меня и давай начнём работать вместе! \uD83D\uDE0A";
+        var messageText = "Ух ты! Даже не знаю, как так вышло, но мы с тобой всё ещё не знакомы( \n\nЗапусти меня и давай начнём работать вместе! \uD83D\uDE0A";
         var markup = this.messageSender.formReplyMarkup(true, List.of("О боте", "Запустить бота"), true);
         var messageParams = this.messageSender.formMessageParameters(update, bot, markup, messageText);
 

@@ -8,16 +8,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Data
 @Document(collection = "chat_data")
 public class ChatData {
-
     @Id
     private Long chatId;
 
-    @Field
+    @Field("cq")
     private String currentQuery;
 
-    @Field
-    private boolean isBotStarted;
-
-    @Field
+    @Field("st")
     private ChatState state;
 }
